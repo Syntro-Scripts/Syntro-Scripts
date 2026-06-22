@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Roblox Script Hub</title>
-    <!-- Prism.js CSS for Dark Theme Lua Highlighting -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     <style>
         :root {
@@ -12,6 +11,7 @@
             --bg-card: #161820;
             --accent-blue: #00a2ff;
             --accent-green: #00e676;
+            --accent-orange: #ff9100;
             --text-white: #f5f6f7;
             --text-dark: #8a8f98;
         }
@@ -49,18 +49,19 @@
             color: var(--accent-blue);
         }
 
-        header p {
-            color: var(--text-dark);
-            margin-top: 10px;
-        }
-
-        .search-container {
-            max-width: 500px;
-            margin: 20px auto 0 auto;
+        /* Controls Section (Search, Filters, Browse) */
+        .controls-container {
+            max-width: 800px;
+            margin: 30px auto 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
         }
 
         .search-input {
-            width: 100%;
+            flex: 2;
+            min-width: 250px;
             padding: 14px 20px;
             background: var(--bg-card);
             border: 1px solid #252836;
@@ -75,12 +76,41 @@
             border-color: var(--accent-blue);
         }
 
+        .filter-select {
+            flex: 1;
+            min-width: 150px;
+            padding: 14px;
+            background: var(--bg-card);
+            border: 1px solid #252836;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .btn-browse-all {
+            padding: 14px 24px;
+            background: #252836;
+            color: white;
+            border: 1px solid #383c52;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-browse-all:hover {
+            background: #313549;
+            border-color: var(--accent-blue);
+        }
+
         /* Script Grid */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 25px;
-            margin-top: 30px;
+            margin-top: 40px;
         }
 
         .card {
@@ -99,8 +129,14 @@
             border-color: #383c52;
         }
 
+        .badge-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
         .badge {
-            align-self: flex-start;
             background: rgba(0, 162, 255, 0.1);
             color: var(--accent-blue);
             padding: 4px 10px;
@@ -108,7 +144,17 @@
             font-size: 0.75rem;
             font-weight: bold;
             text-transform: uppercase;
-            margin-bottom: 12px;
+        }
+
+        /* Dynamic Key Status Styling */
+        .badge.keyless {
+            background: rgba(0, 230, 118, 0.1);
+            color: var(--accent-green);
+        }
+
+        .badge.needs-key {
+            background: rgba(255, 145, 0, 0.1);
+            color: var(--accent-orange);
         }
 
         .card-title {
@@ -159,7 +205,7 @@
             background: #313549;
         }
 
-        /* Modal Overlay for viewing raw code */
+        /* Modal Overlay */
         .modal {
             position: fixed;
             top: 0;
@@ -231,18 +277,23 @@
     <div class="hub-wrapper">
         <header>
             <h1>Roblox<span>ScriptHub</span></h1>
-            <p>Optimized loadstrings and raw scripts for modern executors.</p>
-            <div class="search-container">
-                <input type="text" id="search" class="search-input" placeholder="Search by game name or script type..." oninput="searchScripts()">
+            <div class="controls-container">
+                <button class="btn-browse-all" onclick="browseAll()">Browse All</button>
+
+                <input type="text" id="search" class="search-input" placeholder="Search by game, script title, features..." oninput="applyFilters()">
+                
+                <select id="key-filter" class="filter-select" onchange="applyFilters()">
+                    <option value="all">Any Security</option>
+                    <option value="keyless">Keyless Only</option>
+                    <option value="hasKey">Requires Key</option>
+                </select>
             </div>
         </header>
 
         <div class="grid" id="script-grid">
-            <!-- Dynamic Injection Box -->
-        </div>
+            </div>
     </div>
 
-    <!-- View Code Modal -->
     <div class="modal" id="code-modal" onclick="closeModal(event)">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-header">
@@ -255,73 +306,101 @@
         </div>
     </div>
 
-    <!-- Prism JS core for rendering Lua colorization dynamically -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-lua.min.js"></script>
 
     <script>
-        // Paste your scripts right into this database array
+        // Database Array: Added "isKeyless" boolean configuration
         const robloxScripts = [
             {
                 title: "BedWars Auto-Farm",
                 game: "Bedwars",
+                isKeyless: true,
                 description: "Killaura, Infinite Infamy points, auto-shop buyer, and speed utilities.",
-                // Loadstring is what copies instantly on primary click
-                loadstring: `loadstring(game:HttpGet("https://raw.githubusercontent.com/ExampleUser/RobloxBuilds/main/Bedwars.lua"))()`,
-                // Raw source code displayed in the modal
-                sourceCode: `-- Bedwars Script Framework\nlocal Killaura = true\nlocal LocalPlayer = game.Players.LocalPlayer\n\nprint("BedWars Framework Loaded for " .. LocalPlayer.Name)`
+                loadstring: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Example/Bedwars.lua"))()`,
+                sourceCode: `-- Bedwars Framework\nprint("BedWars Loaded Framework")`
             },
             {
-                title: "Blox Fruits Autofarm & ESP",
+                title: "Blox Fruits Hub",
                 game: "Blox Fruits",
-                description: "Fast attack bypass, auto-leveling island to island, chest tracking, and devil fruit snipers.",
-                loadstring: `loadstring(game:HttpGet("https://raw.githubusercontent.com/ExampleUser/RobloxBuilds/main/BloxFruits.lua"))()`,
-                sourceCode: `-- BloxFruits Macro\nlocal Workspace = game:GetService("Workspace")\nprint("Chest ESP Enabled: " .. tostring(Workspace.Chests:GetChildren()))`
+                isKeyless: false, 
+                description: "Fast attack bypass, auto-leveling island to island, chest tracking.",
+                loadstring: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Example/BloxFruits.lua"))()`,
+                sourceCode: `-- BloxFruits Macro\nprint("Key Verification Passed. Loading...")`
             },
             {
                 title: "Universal Dex Explorer",
                 game: "Universal",
-                description: "Deep game tree structure visualizer. Essential for debugging properties and remote event mapping.",
+                isKeyless: true,
+                description: "Deep game tree structure visualizer. Essential for debugging properties and remote events.",
                 loadstring: `loadstring(game:HttpGet("https://raw.githubusercontent.com/InfDex/Dex/main/main.lua"))()`,
-                sourceCode: `-- Universal Dark Dex clone\nlocal CoreGui = game:GetService("CoreGui")\nlocal DexWindow = Instance.new("ScreenGui", CoreGui)\nDexWindow.Name = "DexExplorer"`
+                sourceCode: `-- Universal Dark Dex clone\nprint("Dex Initialized")`
             }
         ];
 
+        // Central DOM Renderer Engine
         function renderHub(data) {
             const grid = document.getElementById('script-grid');
             grid.innerHTML = '';
 
             if(data.length === 0) {
-                grid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; color: var(--text-dark);">No exploits found matching that search parameters.</p>`;
+                grid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; color: var(--text-dark); margin-top: 20px;">No matching scripts found in database.</p>`;
                 return;
             }
 
-            data.forEach((item, index) => {
+            data.forEach((item) => {
+                // Determine original indexing back to master array for button hooks
+                const originalIndex = robloxScripts.findIndex(s => s.title === item.title);
+                
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.innerHTML = `
                     <div>
-                        <span class="badge">${item.game}</span>
+                        <div class="badge-row">
+                            <span class="badge">${item.game}</span>
+                            <span class="badge ${item.isKeyless ? 'keyless' : 'needs-key'}">
+                                ${item.isKeyless ? 'Keyless' : 'Key System'}
+                            </span>
+                        </div>
                         <div class="card-title">${item.title}</div>
                         <div class="card-desc">${item.description}</div>
                     </div>
                     <div class="card-actions">
-                        <button class="btn btn-primary" onclick="copyLoadstring(${index}, this)">Copy Loadstring</button>
-                        <button class="btn btn-secondary" onclick="viewSource(${index})">View Source</button>
+                        <button class="btn btn-primary" onclick="copyLoadstring(${originalIndex}, this)">Copy Loadstring</button>
+                        <button class="btn btn-secondary" onclick="viewSource(${originalIndex})">View Source</button>
                     </div>
                 `;
                 grid.appendChild(card);
             });
         }
 
-        function searchScripts() {
-            const query = document.getElementById('search').value.toLowerCase();
-            const filtered = robloxScripts.filter(s => 
-                s.title.toLowerCase().includes(query) || 
-                s.game.toLowerCase().includes(query) || 
-                s.description.toLowerCase().includes(query)
-            );
-            renderHub(filtered);
+        // Handles multi-parameter filtering processing (Combines Key Filter + Search text matching)
+        function applyFilters() {
+            const searchQuery = document.getElementById('search').value.toLowerCase();
+            const keyFilterValue = document.getElementById('key-filter').value;
+
+            const filteredData = robloxScripts.filter(script => {
+                // Check security type constraint
+                let matchesKey = true;
+                if (keyFilterValue === 'keyless') matchesKey = script.isKeyless === true;
+                if (keyFilterValue === 'hasKey') matchesKey = script.isKeyless === false;
+
+                // Check text query matching strings
+                const matchesSearch = script.title.toLowerCase().includes(searchQuery) || 
+                                      script.game.toLowerCase().includes(searchQuery) || 
+                                      script.description.toLowerCase().includes(searchQuery);
+
+                return matchesKey && matchesSearch;
+            });
+
+            renderHub(filteredData);
+        }
+
+        // Global Browse Reset execution handler
+        function browseAll() {
+            document.getElementById('search').value = '';
+            document.getElementById('key-filter').value = 'all';
+            renderHub(robloxScripts);
         }
 
         function copyLoadstring(index, button) {
@@ -329,7 +408,7 @@
             navigator.clipboard.writeText(txt).then(() => {
                 const prevText = button.innerText;
                 button.innerText = "Copied Loadstring!";
-                button.style.background = var(--accent-green);
+                button.style.background = "var(--accent-green)";
                 setTimeout(() => {
                     button.innerText = prevText;
                     button.style.background = "var(--accent-blue)";
@@ -344,17 +423,15 @@
             const codeBlock = document.getElementById('code-block');
             codeBlock.textContent = target.sourceCode;
             
-            // Forces Prism library to rebuild the syntax highlights for the raw Lua string
             Prism.highlightElement(codeBlock);
-            
             document.getElementById('code-modal').classList.add('active');
         }
 
-        function closeModal(e) {
+        function closeModal() {
             document.getElementById('code-modal').classList.remove('active');
         }
 
-        // Initialize Paint
+        // Boot system sequence
         renderHub(robloxScripts);
     </script>
 </body>
