@@ -3,282 +3,359 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Script Hub</title>
+    <title>Roblox Script Hub</title>
+    <!-- Prism.js CSS for Dark Theme Lua Highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     <style>
         :root {
-            --bg-primary: #121214;
-            --bg-secondary: #1a1a1e;
-            --accent: #00bcd4;
-            --text-main: #ffffff;
-            --text-muted: #8e8e93;
+            --bg-darker: #0d0e12;
+            --bg-card: #161820;
+            --accent-blue: #00a2ff;
+            --accent-green: #00e676;
+            --text-white: #f5f6f7;
+            --text-dark: #8a8f98;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Roboto, sans-serif;
         }
 
         body {
-            background-color: var(--bg-primary);
-            color: var(--text-main);
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
+            background-color: var(--bg-darker);
+            color: var(--text-white);
+            padding: 40px 20px;
         }
 
-        /* Sidebar Navigation */
-        偏side-bar {
-            width: 250px;
-            background-color: var(--bg-secondary);
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid #2a2a30;
-        }
-
-        .brand {
-            padding: 20px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--accent);
-            text-align: center;
-            border-bottom: 1px solid #2a2a30;
-        }
-
-        .nav-links {
-            list-style: none;
-            padding: 20px 10px;
-        }
-
-        .nav-item {
-            padding: 12px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-bottom: 8px;
-            color: var(--text-muted);
-            transition: all 0.2s;
-        }
-
-        .nav-item:hover, .nav-item.active {
-            background-color: var(--accent);
-            color: var(--bg-primary);
-            font-weight: 600;
-        }
-
-        /* Main Content Area */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
+        .hub-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         header {
-            padding: 20px;
-            background-color: var(--bg-secondary);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #2a2a30;
+            text-align: center;
+            margin-bottom: 40px;
         }
 
-        .search-bar {
-            width: 300px;
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #2a2a30;
-            background: var(--bg-primary);
-            color: var(--text-main);
-            outline: none;
+        header h1 {
+            font-size: 2.5rem;
+            color: var(--text-white);
+            letter-spacing: 1px;
         }
 
-        .search-bar:focus {
-            border-color: var(--accent);
+        header h1 span {
+            color: var(--accent-blue);
         }
 
-        .container {
-            padding: 30px;
+        header p {
+            color: var(--text-dark);
+            margin-top: 10px;
         }
 
-        /* Script Grid Layout */
-        .script-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
+        .search-container {
+            max-width: 500px;
+            margin: 20px auto 0 auto;
         }
 
-        .script-card {
-            background-color: var(--bg-secondary);
-            border: 1px solid #2a2a30;
+        .search-input {
+            width: 100%;
+            padding: 14px 20px;
+            background: var(--bg-card);
+            border: 1px solid #252836;
             border-radius: 8px;
-            padding: 20px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent-blue);
+        }
+
+        /* Script Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid #252836;
+            border-radius: 12px;
+            padding: 24px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            transition: transform 0.2s;
+            transition: transform 0.2s, border-color 0.2s;
         }
 
-        .script-card:hover {
-            transform: translateY(-2px);
-            border-color: var(--accent);
+        .card:hover {
+            transform: translateY(-3px);
+            border-color: #383c52;
         }
 
-        .script-title {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
+        .badge {
+            align-self: flex-start;
+            background: rgba(0, 162, 255, 0.1);
+            color: var(--accent-blue);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 12px;
         }
 
-        .script-desc {
-            color: var(--text-muted);
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .card-desc {
+            color: var(--text-dark);
             font-size: 0.9rem;
-            margin-bottom: 20px;
-            line-height: 1.4;
+            line-height: 1.5;
+            margin-bottom: 24px;
+            flex-grow: 1;
         }
 
-        .btn-copy {
-            background-color: var(--accent);
-            color: var(--bg-primary);
+        .card-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
             border: none;
-            padding: 10px;
-            border-radius: 4px;
+            border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
-            transition: opacity 0.2s;
+            font-size: 0.85rem;
+            transition: background 0.2s, color 0.2s;
         }
 
-        .btn-copy:hover {
-            opacity: 0.9;
+        .btn-primary {
+            background: var(--accent-blue);
+            color: white;
         }
 
-        /* Utility class to hide sections */
-        .hidden {
-            display: none !important;
+        .btn-primary:hover {
+            background: #008cdb;
+        }
+
+        .btn-secondary {
+            background: #252836;
+            color: var(--text-white);
+        }
+
+        .btn-secondary:hover {
+            background: #313549;
+        }
+
+        /* Modal Overlay for viewing raw code */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid #252836;
+            width: 100%;
+            max-width: 800px;
+            max-height: 80vh;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #252836;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--text-dark);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .close-modal:hover {
+            color: white;
+        }
+
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            background: #111218;
+        }
+
+        pre[class*="language-"] {
+            margin: 0 !important;
+            background: transparent !important;
         }
     </style>
 </head>
 <body>
 
-    <div class="side-bar">
-        <div class="brand">ScriptHub</div>
-        <ul class="nav-links">
-            <li class="nav-item active" onclick="switchCategory('all')">All Scripts</li>
-            <li class="nav-item" onclick="switchCategory('automation')">Automation</li>
-            <li class="nav-item" onclick="switchCategory('utility')">Utilities</li>
-        </ul>
-    </div>
-
-    <div class="main-content">
+    <div class="hub-wrapper">
         <header>
-            <h2 id="category-title">All Scripts</h2>
-            <input type="text" id="search" class="search-bar" placeholder="Search scripts..." oninput="filterScripts()">
+            <h1>Roblox<span>ScriptHub</span></h1>
+            <p>Optimized loadstrings and raw scripts for modern executors.</p>
+            <div class="search-container">
+                <input type="text" id="search" class="search-input" placeholder="Search by game name or script type..." oninput="searchScripts()">
+            </div>
         </header>
 
-        <div class="container">
-            <div class="script-grid" id="script-container">
-                </div>
+        <div class="grid" id="script-grid">
+            <!-- Dynamic Injection Box -->
         </div>
     </div>
 
+    <!-- View Code Modal -->
+    <div class="modal" id="code-modal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 id="modal-title">Script Source</h3>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <pre><code class="language-lua" id="code-block"></code></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prism JS core for rendering Lua colorization dynamically -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-lua.min.js"></script>
+
     <script>
-        // Centralized Script Data
-        const scripts = [
+        // Paste your scripts right into this database array
+        const robloxScripts = [
             {
-                title: "Auto-Refresh Page",
-                description: "Automatically reloads the target website every 30 seconds to monitor changes.",
-                category: "automation",
-                code: "setInterval(() => { location.reload(); }, 30000);"
+                title: "BedWars Auto-Farm",
+                game: "Bedwars",
+                description: "Killaura, Infinite Infamy points, auto-shop buyer, and speed utilities.",
+                // Loadstring is what copies instantly on primary click
+                loadstring: `loadstring(game:HttpGet("https://raw.githubusercontent.com/ExampleUser/RobloxBuilds/main/Bedwars.lua"))()`,
+                // Raw source code displayed in the modal
+                sourceCode: `-- Bedwars Script Framework\nlocal Killaura = true\nlocal LocalPlayer = game.Players.LocalPlayer\n\nprint("BedWars Framework Loaded for " .. LocalPlayer.Name)`
             },
             {
-                title: "DOM Element Extractor",
-                description: "Extracts and logs specific data fragments from the target website layout.",
-                category: "utility",
-                code: "console.log(document.querySelectorAll('.target-class'));"
+                title: "Blox Fruits Autofarm & ESP",
+                game: "Blox Fruits",
+                description: "Fast attack bypass, auto-leveling island to island, chest tracking, and devil fruit snipers.",
+                loadstring: `loadstring(game:HttpGet("https://raw.githubusercontent.com/ExampleUser/RobloxBuilds/main/BloxFruits.lua"))()`,
+                sourceCode: `-- BloxFruits Macro\nlocal Workspace = game:GetService("Workspace")\nprint("Chest ESP Enabled: " .. tostring(Workspace.Chests:GetChildren()))`
             },
             {
-                title: "Form Auto-Filler",
-                description: "Speeds up testing workflows by auto-populating repetitive inputs.",
-                category: "automation",
-                code: "document.querySelectorAll('input').forEach(i => i.value = 'Test');"
+                title: "Universal Dex Explorer",
+                game: "Universal",
+                description: "Deep game tree structure visualizer. Essential for debugging properties and remote event mapping.",
+                loadstring: `loadstring(game:HttpGet("https://raw.githubusercontent.com/InfDex/Dex/main/main.lua"))()`,
+                sourceCode: `-- Universal Dark Dex clone\nlocal CoreGui = game:GetService("CoreGui")\nlocal DexWindow = Instance.new("ScreenGui", CoreGui)\nDexWindow.Name = "DexExplorer"`
             }
         ];
 
-        let currentCategory = 'all';
+        function renderHub(data) {
+            const grid = document.getElementById('script-grid');
+            grid.innerHTML = '';
 
-        // Render scripts dynamically
-        function renderScripts() {
-            const container = document.getElementById('script-container');
-            const searchQuery = document.getElementById('search').value.toLowerCase();
-            container.innerHTML = '';
-
-            const filtered = scripts.filter(script => {
-                const matchesCategory = currentCategory === 'all' || script.category === currentCategory;
-                const matchesSearch = script.title.toLowerCase().includes(searchQuery) || 
-                                      script.description.toLowerCase().includes(searchQuery);
-                return matchesCategory && matchesSearch;
-            });
-
-            if (filtered.length === 0) {
-                container.innerHTML = `<p style="color: var(--text-muted);">No scripts found.</p>`;
+            if(data.length === 0) {
+                grid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; color: var(--text-dark);">No exploits found matching that search parameters.</p>`;
                 return;
             }
 
-            filtered.forEach(script => {
+            data.forEach((item, index) => {
                 const card = document.createElement('div');
-                card.className = 'script-card';
+                card.className = 'card';
                 card.innerHTML = `
                     <div>
-                        <div class="script-title">${script.title}</div>
-                        <div class="script-desc">${script.description}</div>
+                        <span class="badge">${item.game}</span>
+                        <div class="card-title">${item.title}</div>
+                        <div class="card-desc">${item.description}</div>
                     </div>
-                    <button class="btn-copy" onclick="copyToClipboard(\`${btoa(script.code)}\`, this)">Copy Script</button>
+                    <div class="card-actions">
+                        <button class="btn btn-primary" onclick="copyLoadstring(${index}, this)">Copy Loadstring</button>
+                        <button class="btn btn-secondary" onclick="viewSource(${index})">View Source</button>
+                    </div>
                 `;
-                container.appendChild(card);
+                grid.appendChild(card);
             });
         }
 
-        // Handle category switching
-        function switchCategory(category) {
-            currentCategory = category;
-            
-            // Update active menu styling
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-                if(item.getAttribute('onclick').includes(category)) {
-                    item.classList.add('active');
-                }
-            });
-
-            // Update title
-            document.getElementById('category-title').innerText = 
-                category.charAt(0).toUpperCase() + category.slice(1) + ' Scripts';
-
-            renderScripts();
+        function searchScripts() {
+            const query = document.getElementById('search').value.toLowerCase();
+            const filtered = robloxScripts.filter(s => 
+                s.title.toLowerCase().includes(query) || 
+                s.game.toLowerCase().includes(query) || 
+                s.description.toLowerCase().includes(query)
+            );
+            renderHub(filtered);
         }
 
-        // Live search filtering
-        function filterScripts() {
-            renderScripts();
-        }
-
-        // Clipboard handler (safeguarded against quote escaping using base64)
-        function copyToClipboard(base64Code, button) {
-            const code = atob(base64Code);
-            navigator.clipboard.writeText(code).then(() => {
-                const originalText = button.innerText;
-                button.innerText = "Copied!";
-                button.style.backgroundColor = "#4caf50";
+        function copyLoadstring(index, button) {
+            const txt = robloxScripts[index].loadstring;
+            navigator.clipboard.writeText(txt).then(() => {
+                const prevText = button.innerText;
+                button.innerText = "Copied Loadstring!";
+                button.style.background = var(--accent-green);
                 setTimeout(() => {
-                    button.innerText = originalText;
-                    button.style.backgroundColor = "var(--accent)";
-                }, 1500);
-            }).catch(err => {
-                console.error('Failed to copy text: ', err);
+                    button.innerText = prevText;
+                    button.style.background = "var(--accent-blue)";
+                }, 1200);
             });
         }
 
-        // Initial paint
-        renderScripts();
+        function viewSource(index) {
+            const target = robloxScripts[index];
+            document.getElementById('modal-title').innerText = target.title + " - Raw Code";
+            
+            const codeBlock = document.getElementById('code-block');
+            codeBlock.textContent = target.sourceCode;
+            
+            // Forces Prism library to rebuild the syntax highlights for the raw Lua string
+            Prism.highlightElement(codeBlock);
+            
+            document.getElementById('code-modal').classList.add('active');
+        }
+
+        function closeModal(e) {
+            document.getElementById('code-modal').classList.remove('active');
+        }
+
+        // Initialize Paint
+        renderHub(robloxScripts);
     </script>
 </body>
 </html>
