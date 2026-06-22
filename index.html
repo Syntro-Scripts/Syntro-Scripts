@@ -3,267 +3,302 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roblox Script Hub</title>
+    <title>Syntro-Scripts</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     <style>
         :root {
-            --bg-darker: #0d0e12;
-            --bg-card: #161820;
-            --accent-blue: #00a2ff;
-            --accent-green: #00e676;
-            --accent-orange: #ff9100;
-            --text-white: #f5f6f7;
-            --text-dark: #8a8f98;
+            --bg-main: #08090c;
+            --bg-card: #0f111a;
+            --bg-card-hover: #141724;
+            --border-color: #1e2235;
+            
+            /* Toxic Neon Theme */
+            --syntro-green: #00ff66;
+            --syntro-glow: rgba(0, 255, 102, 0.15);
+            --keyless-color: #00ff66;
+            --key-color: #ff3366;
+            
+            --text-primary: #ffffff;
+            --text-secondary: #7e8494;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Consolas', 'Segoe UI', monospace;
         }
 
         body {
-            background-color: var(--bg-darker);
-            color: var(--text-white);
-            padding: 40px 20px;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            padding: 50px 20px;
+            min-height: 100vh;
         }
 
-        .hub-wrapper {
-            max-width: 1200px;
+        .wrapper {
+            max-width: 1100px;
             margin: 0 auto;
         }
 
+        /* Rebranded Top Header styling */
         header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 50px;
         }
 
-        header h1 {
-            font-size: 2.5rem;
-            color: var(--text-white);
+        .logo {
+            font-size: 2.8rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--text-primary);
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .logo span {
+            color: var(--syntro-green);
+            text-shadow: 0 0 25px var(--syntro-glow);
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-top: 8px;
             letter-spacing: 1px;
         }
 
-        header h1 span {
-            color: var(--accent-blue);
-        }
-
-        /* Controls Section (Search, Filters, Browse) */
-        .controls-container {
-            max-width: 800px;
-            margin: 30px auto 0 auto;
+        /* Control Panel Design */
+        .control-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            border-radius: 12px;
             display: flex;
-            flex-wrap: wrap;
             gap: 15px;
-            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 35px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .search-input {
-            flex: 2;
-            min-width: 250px;
-            padding: 14px 20px;
-            background: var(--bg-card);
-            border: 1px solid #252836;
-            border-radius: 8px;
-            color: white;
-            font-size: 1rem;
-            outline: none;
-            transition: border 0.2s;
-        }
-
-        .search-input:focus {
-            border-color: var(--accent-blue);
-        }
-
-        .filter-select {
-            flex: 1;
-            min-width: 150px;
-            padding: 14px;
-            background: var(--bg-card);
-            border: 1px solid #252836;
-            border-radius: 8px;
-            color: white;
-            font-size: 1rem;
-            outline: none;
-            cursor: pointer;
-        }
-
-        .btn-browse-all {
-            padding: 14px 24px;
-            background: #252836;
-            color: white;
-            border: 1px solid #383c52;
-            border-radius: 8px;
+        .btn-browse {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 12px 24px;
+            border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.2s ease;
         }
 
-        .btn-browse-all:hover {
-            background: #313549;
-            border-color: var(--accent-blue);
+        .btn-browse:hover {
+            background: var(--text-primary);
+            color: var(--bg-main);
+            border-color: var(--text-primary);
         }
 
-        /* Script Grid */
-        .grid {
+        .search-field {
+            flex: 2;
+            min-width: 260px;
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            padding: 12px 16px;
+            border-radius: 6px;
+            color: white;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .search-field:focus {
+            border-color: var(--syntro-green);
+            box-shadow: 0 0 10px var(--syntro-glow);
+        }
+
+        .dropdown-filter {
+            flex: 1;
+            min-width: 160px;
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 6px;
+            color: white;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* Reconfigured Script Grid Items */
+        .script-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 25px;
-            margin-top: 40px;
+            margin-top: 35px;
         }
 
-        .card {
+        .script-card {
             background: var(--bg-card);
-            border: 1px solid #252836;
+            border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 24px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            transition: transform 0.2s, border-color 0.2s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .card:hover {
-            transform: translateY(-3px);
-            border-color: #383c52;
+        .script-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--syntro-green);
+            box-shadow: 0 10px 25px rgba(0, 255, 102, 0.05);
         }
 
-        .badge-row {
+        .meta-row {
             display: flex;
             gap: 8px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
+            margin-bottom: 15px;
         }
 
-        .badge {
-            background: rgba(0, 162, 255, 0.1);
-            color: var(--accent-blue);
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.75rem;
+        .tag {
+            font-size: 0.7rem;
             font-weight: bold;
             text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
         }
 
-        /* Dynamic Key Status Styling */
-        .badge.keyless {
-            background: rgba(0, 230, 118, 0.1);
-            color: var(--accent-green);
+        .tag-game {
+            background: #1b1f32;
+            color: #9aa2be;
         }
 
-        .badge.needs-key {
-            background: rgba(255, 145, 0, 0.1);
-            color: var(--accent-orange);
+        .tag-keyless {
+            background: rgba(0, 255, 102, 0.1);
+            color: var(--keyless-color);
+            border: 1px solid rgba(0, 255, 102, 0.2);
+        }
+
+        .tag-key {
+            background: rgba(255, 51, 102, 0.1);
+            color: var(--key-color);
+            border: 1px solid rgba(255, 51, 102, 0.2);
         }
 
         .card-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 8px;
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            letter-spacing: -0.3px;
         }
 
-        .card-desc {
-            color: var(--text-dark);
-            font-size: 0.9rem;
-            line-height: 1.5;
-            margin-bottom: 24px;
-            flex-grow: 1;
+        .card-description {
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
         }
 
-        .card-actions {
+        /* Action Buttons */
+        .action-container {
             display: flex;
-            gap: 10px;
+            gap: 12px;
         }
 
-        .btn {
+        .action-btn {
             flex: 1;
             padding: 12px;
             border: none;
             border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
-            font-size: 0.85rem;
-            transition: background 0.2s, color 0.2s;
+            font-size: 0.82rem;
+            transition: all 0.15s ease;
         }
 
-        .btn-primary {
-            background: var(--accent-blue);
-            color: white;
+        .btn-copy-load {
+            background: var(--syntro-green);
+            color: var(--bg-main);
+            box-shadow: 0 4px 12px rgba(0, 255, 102, 0.15);
         }
 
-        .btn-primary:hover {
-            background: #008cdb;
+        .btn-copy-load:hover {
+            opacity: 0.9;
+            box-shadow: 0 4px 20px rgba(0, 255, 102, 0.3);
         }
 
-        .btn-secondary {
-            background: #252836;
-            color: var(--text-white);
+        .btn-view-src {
+            background: #171a26;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
         }
 
-        .btn-secondary:hover {
-            background: #313549;
+        .btn-view-src:hover {
+            background: #202435;
+            border-color: #3f4769;
         }
 
-        /* Modal Overlay */
-        .modal {
+        /* Code Viewer Modal Panel */
+        .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.85);
+            background: rgba(4, 5, 7, 0.9);
+            backdrop-filter: blur(4px);
             display: flex;
             justify-content: center;
             align-items: center;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s;
-            z-index: 1000;
+            transition: opacity 0.25s ease;
+            z-index: 9999;
             padding: 20px;
         }
 
-        .modal.active {
+        .modal-overlay.active {
             opacity: 1;
             pointer-events: auto;
         }
 
-        .modal-content {
+        .modal-window {
             background: var(--bg-card);
-            border: 1px solid #252836;
+            border: 1px solid var(--border-color);
             width: 100%;
-            max-width: 800px;
+            max-width: 850px;
             max-height: 80vh;
             border-radius: 12px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7);
         }
 
-        .modal-header {
-            padding: 20px;
-            border-bottom: 1px solid #252836;
+        .modal-topbar {
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .close-modal {
+        .modal-close {
             background: none;
             border: none;
-            color: var(--text-dark);
-            font-size: 1.5rem;
+            color: var(--text-secondary);
+            font-size: 1.6rem;
             cursor: pointer;
         }
 
-        .close-modal:hover {
+        .modal-close:hover {
             color: white;
         }
 
-        .modal-body {
+        .modal-viewframe {
             padding: 20px;
             overflow-y: auto;
-            background: #111218;
+            background: #050608;
         }
 
         pre[class*="language-"] {
@@ -274,34 +309,34 @@
 </head>
 <body>
 
-    <div class="hub-wrapper">
+    <div class="wrapper">
         <header>
-            <h1>Roblox<span>ScriptHub</span></h1>
-            <div class="controls-container">
-                <button class="btn-browse-all" onclick="browseAll()">Browse All</button>
-
-                <input type="text" id="search" class="search-input" placeholder="Search by game, script title, features..." oninput="applyFilters()">
-                
-                <select id="key-filter" class="filter-select" onchange="applyFilters()">
+            <div class="logo">Syntro<span>-Scripts</span></div>
+            <p>Premium execution scripts optimized for modern Roblox engines.</p>
+            
+            <div class="control-panel">
+                <button class="btn-browse" onclick="resetFilters()">Browse All</button>
+                <input type="text" id="global-search" class="search-field" placeholder="Search parameters (e.g. game, feature, name)..." oninput="runFiltering()">
+                <select id="security-dropdown" class="dropdown-filter" onchange="runFiltering()">
                     <option value="all">Any Security</option>
                     <option value="keyless">Keyless Only</option>
-                    <option value="hasKey">Requires Key</option>
+                    <option value="key">Requires Key</option>
                 </select>
             </div>
         </header>
 
-        <div class="grid" id="script-grid">
+        <div class="script-grid" id="main-grid-target">
             </div>
     </div>
 
-    <div class="modal" id="code-modal" onclick="closeModal(event)">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                <h3 id="modal-title">Script Source</h3>
-                <button class="close-modal" onclick="closeModal()">&times;</button>
+    <div class="modal-overlay" id="src-modal" onclick="dismissModal()">
+        <div class="modal-window" onclick="event.stopPropagation()">
+            <div class="modal-topbar">
+                <h3 id="modal-script-title" style="font-size:1.1rem; font-weight:bold;">Source Code View</h3>
+                <button class="modal-close" onclick="dismissModal()">&times;</button>
             </div>
-            <div class="modal-body">
-                <pre><code class="language-lua" id="code-block"></code></pre>
+            <div class="modal-viewframe">
+                <pre><code class="language-lua" id="lua-render-target"></code></pre>
             </div>
         </div>
     </div>
@@ -310,129 +345,132 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-lua.min.js"></script>
 
     <script>
-        // Database Array: Added "isKeyless" boolean configuration
-        const robloxScripts = [
+        // System Master Database Array
+        const dbScripts = [
             {
-                title: "BedWars Auto-Farm",
+                title: "Syntro V2 Hub",
                 game: "Bedwars",
                 isKeyless: true,
-                description: "Killaura, Infinite Infamy points, auto-shop buyer, and speed utilities.",
-                loadstring: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Example/Bedwars.lua"))()`,
-                sourceCode: `-- Bedwars Framework\nprint("BedWars Loaded Framework")`
+                description: "Full network bypass infrastructure featuring silent aimbot, dynamic fly speeds, and automated infinite iron loop processing.",
+                loadstring: `loadstring(game:HttpGet("https://raw.githubusercontent.com/SyntroHub/Releases/main/BedwarsV2.lua"))()`,
+                sourceCode: `-- Syntro Framework V2\nlocal CoreSystem = {}\nprint("Syntro Network Auth: Success")`
             },
             {
-                title: "Blox Fruits Hub",
+                title: "Blox Fruits Autofarm",
                 game: "Blox Fruits",
-                isKeyless: false, 
-                description: "Fast attack bypass, auto-leveling island to island, chest tracking.",
-                loadstring: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Example/BloxFruits.lua"))()`,
-                sourceCode: `-- BloxFruits Macro\nprint("Key Verification Passed. Loading...")`
+                isKeyless: false,
+                description: "Automated standard level farming, dynamic sea selection optimization, raid bypass execution engines, and direct fruit sniper systems.",
+                loadstring: `loadstring(game:HttpGet("https://raw.githubusercontent.com/SyntroHub/Releases/main/BloxFruits.lua"))()`,
+                sourceCode: `-- Security Verification Interface Needed\nfunction VerifyUser()\n    print("Checking active key...")\nend`
             },
             {
                 title: "Universal Dex Explorer",
                 game: "Universal",
                 isKeyless: true,
-                description: "Deep game tree structure visualizer. Essential for debugging properties and remote events.",
+                description: "Robust property inspector designed to easily trace internal game remote function structures and instance variables dynamically.",
                 loadstring: `loadstring(game:HttpGet("https://raw.githubusercontent.com/InfDex/Dex/main/main.lua"))()`,
-                sourceCode: `-- Universal Dark Dex clone\nprint("Dex Initialized")`
+                sourceCode: `-- Open Source Utility\nlocal Root = game:GetService("Workspace")\nprint("Target Node Root Directory Linked: " .. Root.ClassName)`
             }
         ];
 
-        // Central DOM Renderer Engine
-        function renderHub(data) {
-            const grid = document.getElementById('script-grid');
-            grid.innerHTML = '';
+        // Central UI Painting Module
+        function paintHub(arrayData) {
+            const targetGrid = document.getElementById('main-grid-target');
+            targetGrid.innerHTML = '';
 
-            if(data.length === 0) {
-                grid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; color: var(--text-dark); margin-top: 20px;">No matching scripts found in database.</p>`;
+            if (arrayData.length === 0) {
+                targetGrid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); font-size: 0.9rem; padding: 40px 0;">No scripts match your filter options.</p>`;
                 return;
             }
 
-            data.forEach((item) => {
-                // Determine original indexing back to master array for button hooks
-                const originalIndex = robloxScripts.findIndex(s => s.title === item.title);
-                
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
+            arrayData.forEach(script => {
+                // Determine original static positioning to keep hooks secure
+                const masterIdx = dbScripts.findIndex(ds => ds.title === script.title);
+
+                const cardNode = document.createElement('div');
+                cardNode.className = 'script-card';
+                cardNode.innerHTML = `
                     <div>
-                        <div class="badge-row">
-                            <span class="badge">${item.game}</span>
-                            <span class="badge ${item.isKeyless ? 'keyless' : 'needs-key'}">
-                                ${item.isKeyless ? 'Keyless' : 'Key System'}
+                        <div class="meta-row">
+                            <span class="tag tag-game">${script.game}</span>
+                            <span class="tag ${script.isKeyless ? 'tag-keyless' : 'tag-key'}">
+                                ${script.isKeyless ? 'Keyless' : 'Key System'}
                             </span>
                         </div>
-                        <div class="card-title">${item.title}</div>
-                        <div class="card-desc">${item.description}</div>
+                        <div class="card-title">${script.title}</div>
+                        <div class="card-description">${script.description}</div>
                     </div>
-                    <div class="card-actions">
-                        <button class="btn btn-primary" onclick="copyLoadstring(${originalIndex}, this)">Copy Loadstring</button>
-                        <button class="btn btn-secondary" onclick="viewSource(${originalIndex})">View Source</button>
+                    <div class="action-container">
+                        <button class="action-btn btn-copy-load" onclick="copyAction(${masterIdx}, this)">Copy Loadstring</button>
+                        <button class="action-btn btn-view-src" onclick="triggerSourceView(${masterIdx})">View Code</button>
                     </div>
                 `;
-                grid.appendChild(card);
+                targetGrid.appendChild(cardNode);
             });
         }
 
-        // Handles multi-parameter filtering processing (Combines Key Filter + Search text matching)
-        function applyFilters() {
-            const searchQuery = document.getElementById('search').value.toLowerCase();
-            const keyFilterValue = document.getElementById('key-filter').value;
+        // Search & Security Filtration Algorithm
+        function runFiltering() {
+            const textMatch = document.getElementById('global-search').value.toLowerCase();
+            const securityMatch = document.getElementById('security-dropdown').value;
 
-            const filteredData = robloxScripts.filter(script => {
-                // Check security type constraint
-                let matchesKey = true;
-                if (keyFilterValue === 'keyless') matchesKey = script.isKeyless === true;
-                if (keyFilterValue === 'hasKey') matchesKey = script.isKeyless === false;
+            const structuredData = dbScripts.filter(element => {
+                let checkSecurity = true;
+                if (securityMatch === 'keyless') checkSecurity = element.isKeyless === true;
+                if (securityMatch === 'key') checkSecurity = element.isKeyless === false;
 
-                // Check text query matching strings
-                const matchesSearch = script.title.toLowerCase().includes(searchQuery) || 
-                                      script.game.toLowerCase().includes(searchQuery) || 
-                                      script.description.toLowerCase().includes(searchQuery);
+                const checkText = element.title.toLowerCase().includes(textMatch) ||
+                                  element.game.toLowerCase().includes(textMatch) ||
+                                  element.description.toLowerCase().includes(textMatch);
 
-                return matchesKey && matchesSearch;
+                return checkSecurity && checkText;
             });
 
-            renderHub(filteredData);
+            paintHub(structuredData);
         }
 
-        // Global Browse Reset execution handler
-        function browseAll() {
-            document.getElementById('search').value = '';
-            document.getElementById('key-filter').value = 'all';
-            renderHub(robloxScripts);
+        // Browse All (Clear Interface Control)
+        function resetFilters() {
+            document.getElementById('global-search').value = '';
+            document.getElementById('security-dropdown').value = 'all';
+            paintHub(dbScripts);
         }
 
-        function copyLoadstring(index, button) {
-            const txt = robloxScripts[index].loadstring;
-            navigator.clipboard.writeText(txt).then(() => {
-                const prevText = button.innerText;
-                button.innerText = "Copied Loadstring!";
-                button.style.background = "var(--accent-green)";
+        // Copy Clipboard Management Action
+        function copyAction(index, element) {
+            const payload = dbScripts[index].loadstring;
+            navigator.clipboard.writeText(payload).then(() => {
+                const nativeString = element.innerText;
+                element.innerText = "Copied to Clipboard!";
+                element.style.background = "#ffffff";
+                element.style.color = "#000000";
+                
                 setTimeout(() => {
-                    button.innerText = prevText;
-                    button.style.background = "var(--accent-blue)";
-                }, 1200);
+                    element.innerText = nativeString;
+                    element.style.background = "var(--syntro-green)";
+                    element.style.color = "var(--bg-main)";
+                }, 1400);
             });
         }
 
-        function viewSource(index) {
-            const target = robloxScripts[index];
-            document.getElementById('modal-title').innerText = target.title + " - Raw Code";
+        // Source Code Overlay Activation Action
+        function triggerSourceView(index) {
+            const dataNode = dbScripts[index];
+            document.getElementById('modal-script-title').innerText = dataNode.title + " // Source File Tree";
             
-            const codeBlock = document.getElementById('code-block');
-            codeBlock.textContent = target.sourceCode;
+            const rawOutputBlock = document.getElementById('lua-render-target');
+            rawOutputBlock.textContent = dataNode.sourceCode;
             
-            Prism.highlightElement(codeBlock);
-            document.getElementById('code-modal').classList.add('active');
+            Prism.highlightElement(rawOutputBlock);
+            document.getElementById('src-modal').classList.add('active');
         }
 
-        function closeModal() {
-            document.getElementById('code-modal').classList.remove('active');
+        function dismissModal() {
+            document.getElementById('src-modal').classList.remove('active');
         }
 
-        // Boot system sequence
-        renderHub(robloxScripts);
+        // Initialize Rendering Engine Sequence
+        paintHub(dbScripts);
     </script>
 </body>
 </html>
